@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
+#include <assert.h>
 
 #include "mymalloc.h"
 
@@ -48,17 +49,17 @@ void *mymalloc(size_t size) {
 		return NULL;
 	}
 
-	if (head == NULL) {
-		head = node;
+	if (memchain->head == NULL) {
+		memchain->head = node;
 	}
 
 	/* Update tail of chain to point to new block, and set
 	 * new node as tail. */
-	if (tail) {
-		tail->next = node;
-		node->prev = tail;
+	if (memchain->tail) {
+		memchain->tail->next = node;
+		node->prev = memchain->tail;
 	}
-	tail = node;
+	memchain->tail = node;
 
 	return node->payload;
 }
@@ -74,6 +75,7 @@ void myfree(void *ptr, int *status) {
 
 	if (node->free) {
 		*status = ERROR_DOUBLE_FREE;
+	}
 
 	node->free = 1;
 
@@ -82,23 +84,6 @@ void myfree(void *ptr, int *status) {
 	}
 	if (node->prev != NULL && node->prev->free) {
 		merge_prev_node(node);
-	}
-
-	/* If the node was the tail, and we merged with the
-	 * previous node, we need to update the tail pointer to
-	 * point to node->prev */
-	if (tail <= node) {
-		memnode *prev_node = tail->prev;
-
-		if (head == tail) {
-			head = NULL;
-		}
-
-		tail = prev_node;
-
-		if (prev_node) {
-			prev_node->next = NULL;
-		}
 	}
 }
 
@@ -119,6 +104,38 @@ Memnode *allocate_node(size_t size) {
 	node->payload = node + 1;
 
 	return node;
+}
+
+void split_node(Memnode *node, size_t size) {
+}
+
+Memnode *merge_next_node(Memnode *node) {
+	Memnode *next_node = node->next;
+
+	node->capacity = sizeof(Memnode) + next_node->capacity;
+
+	if (next_node->next) {
+		next_node->prev = node;
+	}
+	else {
+		assert(memchain->tail == next_node);
+		memchain->tail = node;
+	}
+}
+
+Memnode *merge_prev_node(Memnode *node) {
+	Memnode *prev_node = node->prev;
+
+	prev_node->capacity = sizeof(Memnode) + node->capacity;
+	prev_node->next = node->next;
+
+	if (node->next) {
+		node->next->prev = prev_node;
+	}
+	else {
+		assert(memchain->tail == node);
+		memchain->tail = prev_node;
+	}
 }
 
 Memnode *find_best_fit(size_t size) {
@@ -226,4 +243,5 @@ int find_min_delta(size_t size) {
 }
 
 void main() {
+	return;
 }
