@@ -24,6 +24,9 @@ void *mymalloc(size_t size);
 void *myfree(void *ptr);
 
 Memnode *allocate_node(size_t size);
+Memnode *split_node(Memnode *node, size_t size);
+Memnode *merge_next_node(Memnode *node);
+Memnode *merge_prev_node(Memnode *node);
 
 int find_min_delta(size_t size);
 
@@ -31,6 +34,4 @@ Memnode *find_best_fit(size_t size);
 Memnode *find_first_fit(size_t size);
 Memnode *find_worst_fit(size_t size);
 
-Memnode *merge_next_node(Memnode *node);
-Memnode *merge_prev_node(Memnode *node);
 
