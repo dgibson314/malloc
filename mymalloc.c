@@ -8,13 +8,13 @@
 static Memchain *memchain = NULL;
 
 void initialize(int *status) {
-	*status = 0;
+	*status = OK;
 	if (memchain != NULL) {
 		return;
 	}
 
 	if ((memchain = sbrk(sizeof(memchain))) == (void *) - 1) {
-		*status = -1;
+		*status = ERROR_ALLOCATION;
 		return;
 	}
 
@@ -30,7 +30,7 @@ void *mymalloc(size_t size) {
 		initialize(status);
 	}
 
-	if (*status == -1) {
+	if (*status != OK) {
 		return NULL;
 	}
 
@@ -61,6 +61,45 @@ void *mymalloc(size_t size) {
 	tail = node;
 
 	return node->payload;
+}
+
+void myfree(void *ptr, int *status) {
+	if (!ptr) {
+		*status = ERROR_NULL;
+	}
+
+	// Access metadata
+	Memnode *node = (Memnode *) ptr - 1;
+	assert(node->magic = 1234567);
+
+	if (node->free) {
+		*status = ERROR_DOUBLE_FREE;
+
+	node->free = 1;
+
+	if (node->next != NULL && node->next->free) {
+		merge_next_node(node);
+	}
+	if (node->prev != NULL && node->prev->free) {
+		merge_prev_node(node);
+	}
+
+	/* If the node was the tail, and we merged with the
+	 * previous node, we need to update the tail pointer to
+	 * point to node->prev */
+	if (tail <= node) {
+		memnode *prev_node = tail->prev;
+
+		if (head == tail) {
+			head = NULL;
+		}
+
+		tail = prev_node;
+
+		if (prev_node) {
+			prev_node->next = NULL;
+		}
+	}
 }
 
 Memnode *allocate_node(size_t size) {
