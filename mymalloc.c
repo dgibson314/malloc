@@ -107,6 +107,23 @@ Memnode *allocate_node(size_t size) {
 }
 
 void split_node(Memnode *node, size_t size) {
+	assert(node->capacity > size + sizeof(Memnode));
+
+	Memnode *split = ((void *) node->payload) + size;
+
+	split->capacity = node->capacity - size - sizeof(Memnode);
+	split->free = 1;
+	split->next = node->next;
+	split->prev = node;
+	split->magic = MAGIC;
+	split->payload = node + 1;
+
+	if (split->next) {
+		split->next->prev = split;
+	}
+
+	node->capacity = size;
+	node->next = split;
 }
 
 Memnode *merge_next_node(Memnode *node) {
