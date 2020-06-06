@@ -258,7 +258,3 @@ int find_min_delta(size_t size) {
 
 	return delta;
 }
-
-void main() {
-	return;
-}
