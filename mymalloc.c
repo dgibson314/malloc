@@ -8,34 +8,33 @@
 
 static Memchain *memchain = NULL;
 
-void initialize(int *status) {
-	*status = OK;
+int initialize() {
+	int status = OK;
 	if (memchain != NULL) {
-		return;
+		return status;
 	}
 
-	if ((memchain = sbrk(sizeof(memchain))) == (void *) - 1) {
-		*status = ERROR_ALLOCATION;
-		return;
+	if ((memchain = sbrk(sizeof(Memchain))) == (void *) - 1) {
+		status = ERROR_ALLOCATION;
+		return status;
 	}
 
 	memchain->head = NULL;
 	memchain->tail = NULL;
+
+	return status;
 }
 
 void *mymalloc(size_t size) {
 	Memnode *node;
-	int *status;
 
 	if (!memchain) {
-		initialize(status);
+		if (initialize() != OK) {
+			return NULL;
+		}
 	}
 
-	if (*status != OK) {
-		return NULL;
-	}
-
-	if ((node = find_best_fit(size)) == NULL) {
+	if (node = find_best_fit(size)) {
 		node->free = 0;
 
 		if (node->capacity > sizeof(node) + size) {
@@ -48,8 +47,9 @@ void *mymalloc(size_t size) {
 	if ((node = allocate_node(size)) == NULL) {
 		return NULL;
 	}
+	node->free = 0;
 
-	if (memchain->head == NULL) {
+	if (!memchain->head) {
 		memchain->head = node;
 	}
 
@@ -96,7 +96,7 @@ Memnode *allocate_node(size_t size) {
 		return NULL;
 	}
 
-	node->capacity = total_size - size;
+	node->capacity = total_size - sizeof(Memnode);;
 	node->next = NULL;
 	node->prev = NULL;
 	node->free = 1;

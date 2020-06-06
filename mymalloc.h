@@ -25,7 +25,7 @@ enum status_codes {
 	ERROR_ALLOCATION,
 };
 
-void initialize(int *status);
+int initialize();
 
 void *mymalloc(size_t size);
 void myfree(void *ptr, int *status);

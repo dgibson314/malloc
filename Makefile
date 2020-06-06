@@ -1,5 +1,5 @@
 default: mymalloc.o test.o
-	gcc -o test mymalloc.o test.o
+	gcc -static -Wall -g -o test mymalloc.o test.o
 
 test.o: test.c
 	gcc -c test.c
