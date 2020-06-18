@@ -26,6 +26,20 @@ void test_simple_malloc() {
 	myfree(ptr, &status);
 }
 
+void test_reuse_malloc() {
+	int *ptr1 = mymalloc(sizeof(int));
+	*ptr1 = 1;
+	
+	int status;
+	myfree(ptr1, &status);
+
+	int *ptr2 = mymalloc(sizeof(int));
+	*ptr2 = 2;
+
+	assert(ptr1 == ptr2);
+	myfree(ptr2, &status);
+}
+
 void print_simple_malloc() {
 	int *ptr = mymalloc(sizeof(int));
 

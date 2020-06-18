@@ -4,6 +4,10 @@
 
 #define MAGIC 1234567
 
+#define BEST_FIT 0
+#define FIRST_FIT 1
+#define WORST_FIT 2
+
 typedef struct Memnode {
 	size_t capacity;
 	struct Memnode *next;

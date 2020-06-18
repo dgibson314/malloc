@@ -8,6 +8,8 @@
 
 static Memchain *memchain = NULL;
 
+static int MODE = BEST_FIT;
+
 int initialize() {
 	int status = OK;
 	if (memchain != NULL) {
@@ -34,7 +36,21 @@ void *mymalloc(size_t size) {
 		}
 	}
 
-	if (node = find_best_fit(size)) {
+	switch (MODE) {
+		case BEST_FIT:
+			node = find_best_fit(size);
+			break;
+		case FIRST_FIT:
+			node = find_first_fit(size);
+			break;
+		case WORST_FIT:
+			node = find_worst_fit(size);
+			break;
+		default:
+			node = find_best_fit(size);
+	}
+
+	if (node) {
 		node->free = 0;
 
 		if (node->capacity > sizeof(node) + size) {
