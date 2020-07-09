@@ -8,6 +8,8 @@
 #define FIRST_FIT 1
 #define WORST_FIT 2
 
+#define ALIGNMENT 2 * sizeof(size_t)
+
 typedef struct Memnode {
 	size_t capacity;
 	struct Memnode *next;
@@ -21,6 +23,11 @@ typedef struct Memchain {
 	struct Memnode *head;
 	struct Memnode *tail;
 } Memchain;
+
+typedef struct HeavyChain {
+	struct Memnode fast_bins[64];
+	struct Memnode slow_bins[];
+} HeavyChain;
 
 enum status_codes {
 	OK,
