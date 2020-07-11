@@ -116,7 +116,7 @@ Memnode *allocate_node(size_t size) {
 	node->next = NULL;
 	node->prev = NULL;
 	node->free = 1;
-	node->magic = 1234567;
+	node->magic = MAGIC;
 	node->payload = node + 1;
 
 	return node;

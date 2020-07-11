@@ -25,8 +25,9 @@ typedef struct Memchain {
 } Memchain;
 
 typedef struct HeavyChain {
-	struct Memnode fast_bins[64];
-	struct Memnode slow_bins[];
+	/* LIFO lists of pre-established size nodes */
+	struct Memnode fast_bins[10];
+	struct Memnode *slow_bins;
 } HeavyChain;
 
 enum status_codes {
