@@ -74,4 +74,47 @@ void *mymalloc(size_t size) {
 			return result->payload;
 		}
 	}
+
+	/* Search slow bins */
+}
+
+Memnode *find_best_slownode(size_t size) {
+	if (!heavychain) {
+		return NULL;
+	}
+
+	int min_delta = find_min_delta(size);
+	if (min_delta == INT_MAX) {
+		return NULL;
+	}
+
+	Memnode *curr = heavychain->slow_bins;
+	while (curr) {
+		if (curr->free) {
+			if ((curr->capacity - size) == min_delta) {
+				return curr;
+			}
+		}
+		curr = curr->next;
+	}
+
+	return NULL;
+}
+
+int find_min_delta(size_t size) {
+	Memnode *curr = heavychain->slow_bins;
+
+	int delta = INT_MAX;
+
+	while (curr) {
+		if (curr->free) {
+			if (abs(curr->capacity - size) < delta) {
+				delta = abs(curr->capacity - size);
+			}
+		}
+		curr = curr->next;
+	}
+
+	return delta;
+}
 }
