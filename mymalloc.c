@@ -103,25 +103,6 @@ void myfree(void *ptr, int *status) {
 	}
 }
 
-Memnode *allocate_node(size_t size) {
-	Memnode *node;
-
-	size_t total_size = sizeof(Memnode) + size;
-
-	if ((node = sbrk(total_size)) == (void *) - 1) {
-		return NULL;
-	}
-
-	node->capacity = total_size - sizeof(Memnode);;
-	node->next = NULL;
-	node->prev = NULL;
-	node->free = 1;
-	node->magic = MAGIC;
-	node->payload = node + 1;
-
-	return node;
-}
-
 void split_node(Memnode *node, size_t size) {
 	assert(node->capacity > size + sizeof(Memnode));
 

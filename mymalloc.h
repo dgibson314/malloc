@@ -24,12 +24,6 @@ typedef struct Memchain {
 	struct Memnode *tail;
 } Memchain;
 
-typedef struct HeavyChain {
-	/* LIFO lists of pre-established size nodes */
-	struct Memnode fast_bins[10];
-	struct Memnode *slow_bins;
-} HeavyChain;
-
 enum status_codes {
 	OK,
 	ERROR_NULL,
